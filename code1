@@ -1,0 +1,113 @@
+CREATE TABLE Owner (
+    OwnerID INT AUTO_INCREMENT PRIMARY KEY,
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    ContactNumber VARCHAR(15),
+    Address TEXT
+);
+
+CREATE TABLE Veterinary (
+    VeterinaryID INT AUTO_INCREMENT PRIMARY KEY,
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    ContactNumber VARCHAR(15),
+    Specialization VARCHAR(100),
+    ShiftSchedule VARCHAR(50)
+);
+
+CREATE TABLE Animal (
+    AnimalID INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    Species VARCHAR(50) NOT NULL,
+    Breed VARCHAR(50),
+    Sex ENUM('Male', 'Female') NOT NULL,
+    BirthDate DATE,
+    Status ENUM('Healthy', 'Under Treatment', 'Adopted', 'Deceased'),
+    NextVaccinationDate DATE,
+    OwnerID INT,
+    FOREIGN KEY (OwnerID) REFERENCES Owner(OwnerID) ON DELETE SET NULL
+);
+
+CREATE TABLE Diagnosis (
+    DiagnosisID INT AUTO_INCREMENT PRIMARY KEY,
+    AnimalID INT NOT NULL,
+    VeterinaryID INT NOT NULL,
+    DiagnosisDate DATE NOT NULL,
+    DiagnosisDetails TEXT,
+    FOREIGN KEY (AnimalID) REFERENCES Animal(AnimalID) ON DELETE CASCADE,
+    FOREIGN KEY (VeterinaryID) REFERENCES Veterinary(VeterinaryID) ON DELETE CASCADE
+);
+
+CREATE TABLE Treatment (
+    TreatmentID INT AUTO_INCREMENT PRIMARY KEY,
+    DiagnosisID INT NOT NULL,
+    FollowUpDate DATE,
+    FOREIGN KEY (DiagnosisID) REFERENCES Diagnosis(DiagnosisID) ON DELETE CASCADE
+);
+
+INSERT INTO Owner (FirstName, LastName, ContactNumber, Address) VALUES
+('Juan', 'Dela Cruz', '09123456789', 'Quezon City'),
+('Maria', 'Santos', '09234567890', 'Makati City');
+
+INSERT INTO Animal (Name, Species, Breed, Sex, BirthDate, Status, NextVaccinationDate, OwnerID) VALUES
+('Max', 'Dog', 'Labrador', 'Male', '2021-05-10', 'Healthy', '2025-06-01', 1),
+('Mittens', 'Cat', 'Persian', 'Female', '2022-03-15', 'Under Treatment', '2025-07-10', 2);
+
+INSERT INTO Veterinary (FirstName, LastName, ContactNumber, Specialization, ShiftSchedule) VALUES
+('Dr. John', 'Smith', '09391234567', 'Small Animals', 'Morning'),
+('Dr. Jane', 'Doe', '09223456789', 'Exotic Pets', 'Evening');
+
+INSERT INTO Diagnosis (AnimalID, VeterinaryID, DiagnosisDate, DiagnosisDetails) VALUES
+(1, 1, '2025-03-25', 'Skin Allergy'),
+(2, 2, '2025-03-20', 'Ear Infection');
+
+INSERT INTO Treatment (DiagnosisID, FollowUpDate) VALUES
+(1, '2025-04-10'),
+(2, '2025-04-15');
+
+SELECT a.Name, a.Species, a.Breed, a.Sex, a.BirthDate, CONCAT(o.FirstName, ' ', o.LastName) AS Owner
+FROM Animal a
+LEFT JOIN Owner o ON a.OwnerID = o.OwnerID;
+
+SELECT * FROM Animal WHERE OwnerID IS NULL;
+
+SELECT o.FirstName, o.LastName, COUNT(a.AnimalID) AS Total_Animals
+FROM Owner o
+LEFT JOIN Animal a ON o.OwnerID = a.OwnerID
+GROUP BY o.OwnerID;
+
+SELECT v.FirstName, v.LastName, a.Name AS Animal, d.DiagnosisDate
+FROM Veterinary v
+JOIN Diagnosis d ON v.VeterinaryID = d.VeterinaryID
+JOIN Animal a ON d.AnimalID = a.AnimalID;
+
+SELECT a.Name, d.DiagnosisDate, d.DiagnosisDetails
+FROM Diagnosis d
+JOIN Animal a ON d.AnimalID = a.AnimalID
+WHERE a.Name = 'Max'
+ORDER BY d.DiagnosisDate DESC;
+
+SELECT * FROM Animal
+WHERE NextVaccinationDate BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY);
+
+SELECT Name, BirthDate FROM Animal ORDER BY BirthDate DESC LIMIT 1;
+SELECT Name, BirthDate FROM Animal ORDER BY BirthDate ASC LIMIT 1;
+
+SELECT o.FirstName, o.LastName, COUNT(a.AnimalID) AS Total_Animals
+FROM Owner o
+JOIN Animal a ON o.OwnerID = a.OwnerID
+GROUP BY o.OwnerID
+HAVING COUNT(a.AnimalID) > 3;
+
+SELECT v.FirstName, v.LastName, COUNT(d.DiagnosisID) AS Total_Diagnoses
+FROM Veterinary v
+JOIN Diagnosis d ON v.VeterinaryID = d.VeterinaryID
+GROUP BY v.VeterinaryID;
+
+SELECT a.Name, a.Status, t.FollowUpDate
+FROM Animal a
+LEFT JOIN Treatment t ON a.AnimalID = (SELECT AnimalID FROM Diagnosis WHERE DiagnosisID = t.DiagnosisID)
+WHERE a.Status = 'Under Treatment' OR t.FollowUpDate IS NOT NULL;
+
+
+
