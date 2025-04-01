@@ -1,113 +1,200 @@
 CREATE TABLE Owner (
-    OwnerID INT AUTO_INCREMENT PRIMARY KEY,
+    OwnerID INT PRIMARY KEY AUTO_INCREMENT,
     FirstName VARCHAR(50) NOT NULL,
     LastName VARCHAR(50) NOT NULL,
     ContactNumber VARCHAR(15),
-    Address TEXT
+    Address VARCHAR(200)
 );
 
 CREATE TABLE Veterinary (
-    VeterinaryID INT AUTO_INCREMENT PRIMARY KEY,
+    VeterinaryID INT PRIMARY KEY AUTO_INCREMENT,
     FirstName VARCHAR(50) NOT NULL,
     LastName VARCHAR(50) NOT NULL,
-    ContactNumber VARCHAR(15),
+    ContactNumber VARCHAR(15) NOT NULL,
     Specialization VARCHAR(100),
     ShiftSchedule VARCHAR(50)
 );
 
 CREATE TABLE Animal (
-    AnimalID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100) NOT NULL,
-    Species VARCHAR(50) NOT NULL,
-    Breed VARCHAR(50),
+    AnimalID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(50) NOT NULL,
+    Species VARCHAR(30) NOT NULL,
+    Breed VARCHAR(30),
     Sex ENUM('Male', 'Female') NOT NULL,
-    BirthDate DATE,
-    Status ENUM('Healthy', 'Under Treatment', 'Adopted', 'Deceased'),
+    BirthDate DATE NOT NULL,
+    Status ENUM('Healthy', 'Under Treatment', 'Adopted', 'Deceased') NOT NULL,
     NextVaccinationDate DATE,
     OwnerID INT,
-    FOREIGN KEY (OwnerID) REFERENCES Owner(OwnerID) ON DELETE SET NULL
+    FOREIGN KEY (OwnerID) REFERENCES Owner(OwnerID)
 );
 
 CREATE TABLE Diagnosis (
-    DiagnosisID INT AUTO_INCREMENT PRIMARY KEY,
+    DiagnosisID INT PRIMARY KEY AUTO_INCREMENT,
     AnimalID INT NOT NULL,
     VeterinaryID INT NOT NULL,
     DiagnosisDate DATE NOT NULL,
-    DiagnosisDetails TEXT,
-    FOREIGN KEY (AnimalID) REFERENCES Animal(AnimalID) ON DELETE CASCADE,
-    FOREIGN KEY (VeterinaryID) REFERENCES Veterinary(VeterinaryID) ON DELETE CASCADE
-);
-
-CREATE TABLE Treatment (
-    TreatmentID INT AUTO_INCREMENT PRIMARY KEY,
-    DiagnosisID INT NOT NULL,
+    DiagnosisDetails TEXT NOT NULL,
+    Treatment TEXT,
     FollowUpDate DATE,
-    FOREIGN KEY (DiagnosisID) REFERENCES Diagnosis(DiagnosisID) ON DELETE CASCADE
+    FOREIGN KEY (AnimalID) REFERENCES Animal(AnimalID),
+    FOREIGN KEY (VeterinaryID) REFERENCES Veterinary(VeterinaryID)
 );
 
-INSERT INTO Owner (FirstName, LastName, ContactNumber, Address) VALUES
-('Juan', 'Dela Cruz', '09123456789', 'Quezon City'),
-('Maria', 'Santos', '09234567890', 'Makati City');
 
-INSERT INTO Animal (Name, Species, Breed, Sex, BirthDate, Status, NextVaccinationDate, OwnerID) VALUES
-('Max', 'Dog', 'Labrador', 'Male', '2021-05-10', 'Healthy', '2025-06-01', 1),
-('Mittens', 'Cat', 'Persian', 'Female', '2022-03-15', 'Under Treatment', '2025-07-10', 2);
+INSERT INTO Owner (FirstName, LastName, ContactNumber, Address)
+VALUES
+('Mia', 'Tabubuca', '09128173123', 'Agaman Norte'),
+('Lovelyn', 'Malanot', '09451456367', 'Taytay'),
+('Arlyne', 'Udaundo', '09355171283', 'Lasilat'),
+('Klein', 'Tan', '09474383201', 'Asassi'),
+('Ashley', 'Arce', '09785803160', 'Nangalinan'),
+('Starleigh', 'Arce', '096825954746', 'Nangalinan'),
+('Angel Erica', 'Uanang', '09187221534', 'San Jose'),
+('Princess', 'Dona', '09238619766', 'Dalin'),
+('Ladyvie', 'Balacanao', '099876554321', 'Barsat East'),
+('Jovy', 'Wilson', '09123456789', 'Mocag');
 
-INSERT INTO Veterinary (FirstName, LastName, ContactNumber, Specialization, ShiftSchedule) VALUES
-('Dr. John', 'Smith', '09391234567', 'Small Animals', 'Morning'),
-('Dr. Jane', 'Doe', '09223456789', 'Exotic Pets', 'Evening');
 
-INSERT INTO Diagnosis (AnimalID, VeterinaryID, DiagnosisDate, DiagnosisDetails) VALUES
-(1, 1, '2025-03-25', 'Skin Allergy'),
-(2, 2, '2025-03-20', 'Ear Infection');
+INSERT INTO Veterinary (FirstName, LastName, ContactNumber, Specialization, ShiftSchedule)
+VALUES
+('Dr. Alice', 'Wong', '9999999999', 'Surgery', 'Morning'),
+('Dr. John', 'Kim', '8888888888', 'Dermatology', 'Evening'),
+('Dr. Jane', 'Davies', '7777777777', 'General Medicine', 'Night'),
+('Dr. Liam', 'Miller', '6666666666', 'Pediatrics', 'Morning'),
+('Dr. Venice', 'Anderson', '5555555555', 'Emergency Care', 'Afternoon');
 
-INSERT INTO Treatment (DiagnosisID, FollowUpDate) VALUES
-(1, '2025-04-10'),
-(2, '2025-04-15');
 
-SELECT a.Name, a.Species, a.Breed, a.Sex, a.BirthDate, CONCAT(o.FirstName, ' ', o.LastName) AS Owner
-FROM Animal a
-LEFT JOIN Owner o ON a.OwnerID = o.OwnerID;
+INSERT INTO Animal (Name, Species, Breed, Sex, BirthDate, Status, NextVaccinationDate, OwnerID)
+VALUES
+('Max', 'Dog', 'Beagle', 'Male', '2020-01-15', 'Healthy', '2023-04-30', 1),
+('Bella', 'Dog', 'Labrador', 'Female', '2019-06-10', 'Under Treatment', '2023-05-05', 2),
+('Charlie', 'Cat', 'Persian', 'Male', '2021-09-22', 'Healthy', '2023-06-15', 3),
+('Lucy', 'Cat', 'Siamese', 'Female', '2018-03-25', 'Adopted', NULL, 4),
+('Rocky', 'Bird', 'Parrot', 'Male', '2022-02-12', 'Healthy', '2023-04-25', NULL),
+('Daisy', 'Dog', 'Poodle', 'Female', '2021-11-02', 'Healthy', '2023-07-08', 5),
+('Luna', 'Cat', 'Bengal', 'Female', '2020-03-15', 'Under Treatment', '2023-04-28', 6),
+('Buddy', 'Dog', 'Bulldog', 'Male', '2019-05-22', 'Healthy', '2023-05-15', 7),
+('Coco', 'Bird', 'Cockatiel', 'Female', '2021-01-10', 'Healthy', '2023-05-01', NULL),
+('Milo', 'Dog', 'Dachshund', 'Male', '2020-06-12', 'Healthy', '2023-05-30', 8);
 
-SELECT * FROM Animal WHERE OwnerID IS NULL;
 
-SELECT o.FirstName, o.LastName, COUNT(a.AnimalID) AS Total_Animals
-FROM Owner o
-LEFT JOIN Animal a ON o.OwnerID = a.OwnerID
-GROUP BY o.OwnerID;
+SELECT 
+    a.Name AS AnimalName, a.Species, a.Breed, a.Sex, a.BirthDate,
+    CONCAT(o.FirstName, ' ', o.LastName) AS OwnerFullName
+FROM 
+    Animal a
+LEFT JOIN 
+    Owner o ON a.OwnerID = o.OwnerID;
 
-SELECT v.FirstName, v.LastName, a.Name AS Animal, d.DiagnosisDate
-FROM Veterinary v
-JOIN Diagnosis d ON v.VeterinaryID = d.VeterinaryID
-JOIN Animal a ON d.AnimalID = a.AnimalID;
 
-SELECT a.Name, d.DiagnosisDate, d.DiagnosisDetails
-FROM Diagnosis d
-JOIN Animal a ON d.AnimalID = a.AnimalID
-WHERE a.Name = 'Max'
-ORDER BY d.DiagnosisDate DESC;
+SELECT 
+    Name AS AnimalName, Species, Breed, Sex, BirthDate
+FROM 
+    Animal
+WHERE 
+    OwnerID IS NULL;
 
-SELECT * FROM Animal
-WHERE NextVaccinationDate BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY);
 
-SELECT Name, BirthDate FROM Animal ORDER BY BirthDate DESC LIMIT 1;
-SELECT Name, BirthDate FROM Animal ORDER BY BirthDate ASC LIMIT 1;
+SELECT 
+    CONCAT(o.FirstName, ' ', o.LastName) AS OwnerFullName,
+    COUNT(a.AnimalID) AS TotalAnimals
+FROM 
+    Owner o
+LEFT JOIN 
+    Animal a ON o.OwnerID = a.OwnerID
+GROUP BY 
+    o.OwnerID;
 
-SELECT o.FirstName, o.LastName, COUNT(a.AnimalID) AS Total_Animals
-FROM Owner o
-JOIN Animal a ON o.OwnerID = a.OwnerID
-GROUP BY o.OwnerID
-HAVING COUNT(a.AnimalID) > 3;
 
-SELECT v.FirstName, v.LastName, COUNT(d.DiagnosisID) AS Total_Diagnoses
-FROM Veterinary v
-JOIN Diagnosis d ON v.VeterinaryID = d.VeterinaryID
-GROUP BY v.VeterinaryID;
+SELECT 
+    CONCAT(v.FirstName, ' ', v.LastName) AS VeterinarianName,
+    a.Name AS AnimalName,
+    MAX(d.DiagnosisDate) AS LatestDiagnosisDate
+FROM 
+    Veterinary v
+JOIN 
+    Diagnosis d ON v.VeterinaryID = d.VeterinaryID
+JOIN 
+    Animal a ON d.AnimalID = a.AnimalID
+GROUP BY 
+    v.VeterinaryID, a.AnimalID;
 
-SELECT a.Name, a.Status, t.FollowUpDate
-FROM Animal a
-LEFT JOIN Treatment t ON a.AnimalID = (SELECT AnimalID FROM Diagnosis WHERE DiagnosisID = t.DiagnosisID)
-WHERE a.Status = 'Under Treatment' OR t.FollowUpDate IS NOT NULL;
+
+SELECT 
+    d.DiagnosisDate, d.DiagnosisDetails, d.Treatment, d.FollowUpDate
+FROM 
+    Diagnosis d
+JOIN 
+    Animal a ON d.AnimalID = a.AnimalID
+WHERE 
+    a.AnimalID = 1
+ORDER BY 
+    d.DiagnosisDate
+LIMIT 25;
+
+SELECT 
+    Name AS AnimalName, Species, Breed, NextVaccinationDate
+FROM 
+    Animal
+WHERE 
+    NextVaccinationDate BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY);
+
+
+SELECT 
+    Name AS YoungestAnimal, Species, Breed, BirthDate,
+    CONCAT(o.FirstName, ' ', o.LastName) AS OwnerFullName
+FROM 
+    Animal a
+LEFT JOIN 
+    Owner o ON a.OwnerID = o.OwnerID
+ORDER BY 
+    a.BirthDate DESC
+LIMIT 1;
+
+SELECT 
+    Name AS OldestAnimal, Species, Breed, BirthDate,
+    CONCAT(o.FirstName, ' ', o.LastName) AS OwnerFullName
+FROM 
+    Animal a
+LEFT JOIN 
+    Owner o ON a.OwnerID = o.OwnerID
+ORDER BY 
+    a.BirthDate ASC
+LIMIT 1;
+
+
+SELECT 
+    CONCAT(o.FirstName, ' ', o.LastName) AS OwnerFullName,
+    COUNT(a.AnimalID) AS TotalAnimals
+FROM 
+    Owner o
+JOIN 
+    Animal a ON o.OwnerID = a.OwnerID
+GROUP BY 
+    o.OwnerID
+HAVING 
+    TotalAnimals > 3;
+
+
+SELECT 
+    CONCAT(v.FirstName, ' ', v.LastName) AS VeterinarianName,
+    COUNT(d.DiagnosisID) AS TotalDiagnoses
+FROM 
+    Veterinary v
+LEFT JOIN 
+    Diagnosis d ON v.VeterinaryID = d.VeterinaryID
+GROUP BY 
+    v.VeterinaryID;
+
+
+SELECT 
+    a.Name AS AnimalName, a.Species, a.Breed, a.Status, d.FollowUpDate
+FROM 
+    Animal a
+LEFT JOIN 
+    Diagnosis d ON a.AnimalID = d.AnimalID
+WHERE 
+    a.Status = 'Under Treatment' OR d.FollowUpDate >= CURDATE();
 
 
 
