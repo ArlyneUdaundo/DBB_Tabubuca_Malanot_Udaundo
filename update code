@@ -1,12 +1,32 @@
-UPDATE Owner SET ContactNumber = '09987654321', Address = 'Pasig City' WHERE OwnerID = 1;
-UPDATE Owner SET ContactNumber = '09876543210', Address = 'Cebu City' WHERE OwnerID = 2;
+UPDATE Owner
+SET ContactNumber = '1231231234', Address = '999 Updated Ave'
+WHERE OwnerID = 1;
 
-UPDATE Animal SET Status = 'Adopted' WHERE AnimalID = 1;
-UPDATE Animal SET Status = 'Deceased' WHERE AnimalID = 2;
+UPDATE Owner
+SET ContactNumber = '4564564567', Address = '888 Updated Blvd'
+WHERE OwnerID = 2;
 
-INSERT INTO Diagnosis (AnimalID, VeterinaryID, DiagnosisDate, DiagnosisDetails)
-VALUES (1, 2, CURDATE(), 'Routine Check-up');
 
-UPDATE Diagnosis SET DiagnosisDetails = 'Parvovirus Infection' WHERE DiagnosisDetails = 'Viral Infection';
 
-UPDATE Veterinary SET Specialization = 'Wildlife Medicine' WHERE VeterinaryID = 2;
+UPDATE Animal
+SET Status = 'Adopted'
+WHERE AnimalID = 3;
+
+UPDATE Animal
+SET Status = 'Deceased'
+WHERE AnimalID = 6;
+
+
+INSERT INTO Diagnosis (AnimalID, VeterinaryID, DiagnosisDate, DiagnosisDetails, Treatment)
+VALUES (1, 2, CURDATE(), 'Routine Checkup', 'No Issues Detected');
+
+
+UPDATE Diagnosis
+SET DiagnosisDetails = 'Parvovirus Infection'
+WHERE DiagnosisID = 1;
+
+
+
+UPDATE Veterinary
+SET Specialization = 'Cardiology', ShiftSchedule = 'Night'
+WHERE VeterinaryID = 3;
